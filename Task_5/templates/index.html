@@ -1,0 +1,193 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact Book</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Contact Book</h1>
+      <p class="subtitle">Store name, phone, email & address. Add • Search • Update • Delete</p>
+    </header>
+
+    <section class="form-section">
+      <form id="contact-form">
+        <input type="hidden" id="contact-id" />
+        <div class="row">
+          <input id="name" placeholder="Full name" required />
+          <input id="phone" placeholder="Phone" required />
+        </div>
+        <div class="row">
+          <input id="email" placeholder="Email (optional)" />
+          <input id="address" placeholder="Address (optional)" />
+        </div>
+        <div class="row actions">
+          <button type="submit" id="save-btn">Add Contact</button>
+          <button type="button" id="reset-btn" class="muted">Reset</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="search-section">
+      <input id="search" placeholder="Search by name or phone..." />
+      <button id="refresh" class="muted">Refresh</button>
+    </section>
+
+    <section class="list-section">
+      <table id="contacts-table">
+        <thead>
+          <tr>
+            <th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="empty-note" class="muted">No contacts yet. Add one using the form above.</p>
+    </section>
+  </div>
+
+<script>
+const apiRoot = '/api/contacts';
+
+async function fetchContacts(q='') {
+  const url = q ? `${apiRoot}?q=${encodeURIComponent(q)}` : apiRoot;
+  const r = await fetch(url);
+  return r.ok ? r.json() : [];
+}
+
+function showContacts(list) {
+  const tbody = document.querySelector('#contacts-table tbody');
+  tbody.innerHTML = '';
+  if (!list.length) {
+    document.getElementById('empty-note').style.display = 'block';
+    return;
+  }
+  document.getElementById('empty-note').style.display = 'none';
+  list.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(c.name)}</td>
+      <td>${escapeHtml(c.phone)}</td>
+      <td>${escapeHtml(c.email || '')}</td>
+      <td>${escapeHtml(c.address || '')}</td>
+      <td class="actions-cell">
+        <button data-id="${c.id}" class="edit">Edit</button>
+        <button data-id="${c.id}" class="delete muted">Delete</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function escapeHtml(s) {
+  return (s || '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+}
+
+async function loadAndShow(q='') {
+  const contacts = await fetchContacts(q);
+  showContacts(contacts);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadAndShow();
+
+  const form = document.getElementById('contact-form');
+  const resetBtn = document.getElementById('reset-btn');
+  const searchInput = document.getElementById('search');
+  const refreshBtn = document.getElementById('refresh');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('contact-id').value;
+    const payload = {
+      name: document.getElementById('name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      address: document.getElementById('address').value.trim()
+    };
+    if (!payload.name || !payload.phone) {
+      alert('Name and phone are required.');
+      return;
+    }
+
+    if (id) {
+      // update
+      const res = await fetch(`${apiRoot}/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        alert('Failed to update contact.');
+      } else {
+        form.reset();
+        document.getElementById('contact-id').value = '';
+        document.getElementById('save-btn').textContent = 'Add Contact';
+        loadAndShow(searchInput.value.trim());
+      }
+    } else {
+      // create
+      const res = await fetch(apiRoot, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(()=>({}));
+        alert(body.error || 'Failed to add contact.');
+      } else {
+        form.reset();
+        loadAndShow(searchInput.value.trim());
+      }
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    form.reset();
+    document.getElementById('contact-id').value = '';
+    document.getElementById('save-btn').textContent = 'Add Contact';
+  });
+
+  searchInput.addEventListener('input', async (e) => {
+    const q = e.target.value.trim();
+    loadAndShow(q);
+  });
+
+  refreshBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    loadAndShow();
+  });
+
+  document.querySelector('#contacts-table tbody').addEventListener('click', async (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    if (btn.classList.contains('edit')) {
+      // fetch single (we can fetch list and find)
+      const list = await fetchContacts();
+      const c = list.find(it => String(it.id) === String(id));
+      if (!c) return alert('Contact not found');
+      document.getElementById('contact-id').value = c.id;
+      document.getElementById('name').value = c.name;
+      document.getElementById('phone').value = c.phone;
+      document.getElementById('email').value = c.email || '';
+      document.getElementById('address').value = c.address || '';
+      document.getElementById('save-btn').textContent = 'Update Contact';
+      window.scrollTo({top:0, behavior:'smooth'});
+    } else if (btn.classList.contains('delete')) {
+      if (!confirm('Delete contact?')) return;
+      const res = await fetch(`${apiRoot}/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        alert('Failed to delete');
+      } else {
+        loadAndShow(searchInput.value.trim());
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>

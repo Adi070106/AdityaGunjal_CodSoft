@@ -1,0 +1,173 @@
+/* static/style.css */
+
+:root {
+  --bg: #f7fafc;
+  --card: #ffffff;
+  --accent: #0f172a;
+  --muted: #667085;
+  --primary: #0b69ff;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: Inter, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--accent);
+  padding: 28px;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+}
+
+.form-section {
+  background: var(--card);
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 18px rgba(11, 33, 71, 0.06);
+  margin-bottom: 12px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.row input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #e6e9ee;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+button {
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 0;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button.muted {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid #e6e9ee;
+}
+
+.search-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.search-section input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e6e9ee;
+}
+
+.list-section {
+  background: var(--card);
+  padding: 12px;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 18px rgba(11, 33, 71, 0.04);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #eef2f7;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #f5f7fa;
+  font-size: 14px;
+}
+
+.actions-cell button {
+  margin-right: 6px;
+}
+
+.muted {
+  opacity: 0.85;
+}
+
+#empty-note {
+  margin: 12px 0;
+  color: var(--muted);
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .row {
+    flex-direction: column;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody td {
+    display: block;
+    padding: 8px;
+  }
+
+  tbody tr {
+    margin-bottom: 12px;
+    background: #fbfdff;
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  tbody td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+  }
+}
