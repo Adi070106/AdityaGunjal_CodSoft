@@ -1,11 +1,9 @@
 import tkinter as tk
 
-# ---------------- Logic ---------------- #
 
 def click(btn_text):
     global expression
 
-    # Convert UI 'x' into internal '*'
     if btn_text == "x":
         btn_text = "*"
 
@@ -40,7 +38,6 @@ def click(btn_text):
     expression += btn_text
     input_var.set(expression)
 
-# ---------------- UI ---------------- #
 
 root = tk.Tk()
 root.title("Colorful Calculator")

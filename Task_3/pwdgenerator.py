@@ -3,7 +3,7 @@ from tkinter import messagebox
 import random
 import string
 
-# Function to generate password
+# Function
 def generate_password():
     try:
         length = int(length_entry.get())
@@ -11,7 +11,6 @@ def generate_password():
             messagebox.showerror("Error", "Password length must be at least 6")
             return
 
-        # Include selected character types
         characters = ""
         if var_upper.get():
             characters += string.ascii_uppercase
@@ -43,7 +42,7 @@ def copy_password():
     else:
         messagebox.showwarning("Warning", "No password to copy!")
 
-# ---- GUI ----
+# GUI
 root = tk.Tk()
 root.title("🔐 Password Generator")
 root.geometry("500x500")
@@ -52,7 +51,7 @@ root.config(bg="#1e1e2f")
 title_label = tk.Label(root, text="Secure Password Generator", font=("Arial Rounded MT Bold", 16), fg="white", bg="#1e1e2f")
 title_label.pack(pady=15)
 
-# Password length input
+# Password Length
 frame_length = tk.Frame(root, bg="#1e1e2f")
 frame_length.pack(pady=5)
 tk.Label(frame_length, text="Password Length:", font=("Arial", 12), fg="white", bg="#1e1e2f").pack(side=tk.LEFT, padx=5)

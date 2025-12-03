@@ -6,7 +6,7 @@ import os
 CONTACT_FILE = "contacts.json"
 
 
-# ---------------------- DATA HANDLING ----------------------
+#  DATA HANDLING 
 def load_contacts():
     if os.path.exists(CONTACT_FILE):
         with open(CONTACT_FILE, "r") as f:
@@ -19,7 +19,7 @@ def save_contacts(contacts):
         json.dump(contacts, f, indent=4)
 
 
-# ---------------------- APP CLASS ----------------------
+#  APP CLASS 
 class ContactBook:
     def __init__(self, root):
         self.root = root
@@ -38,7 +38,7 @@ class ContactBook:
         main_frame = tk.Frame(root, bg="#e9eef7")
         main_frame.pack(pady=10)
 
-        # ---------- LEFT FORM ----------
+        
         form_frame = tk.LabelFrame(main_frame, text="Add / Update Contact",
                                    font=("Arial", 12, "bold"), bg="#e9eef7")
         form_frame.grid(row=0, column=0, padx=20, pady=10)
@@ -68,7 +68,7 @@ class ContactBook:
         tk.Button(form_frame, text="Delete Selected", command=self.delete_contact,
                   bg="#D9534F", fg="white", width=20).grid(row=6, column=0, columnspan=2, pady=5)
 
-        # ---------- SEARCH ----------
+        # SEARCH 
         search_frame = tk.Frame(root, bg="#e9eef7")
         search_frame.pack()
 
@@ -80,7 +80,7 @@ class ContactBook:
         tk.Button(search_frame, text="Reset", command=self.load_list,
                   bg="#6C757D", fg="white").grid(row=0, column=3)
 
-        # ---------- CONTACT LIST ----------
+        #  CONTACT LIST 
         list_frame = tk.Frame(root, bg="#e9eef7")
         list_frame.pack(pady=10)
 
@@ -93,7 +93,7 @@ class ContactBook:
 
         self.load_list()
 
-    # ---------------------- FUNCTIONS ----------------------
+
     def load_list(self):
         for row in self.tree.get_children():
             self.tree.delete(row)
@@ -171,7 +171,7 @@ class ContactBook:
         self.address_entry.delete(0, tk.END)
 
 
-# ---------------------- MAIN APP ----------------------
+#  MAIN APP 
 root = tk.Tk()
 app = ContactBook(root)
 root.mainloop()

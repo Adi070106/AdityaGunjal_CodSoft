@@ -26,7 +26,7 @@ class ToDoApp:
 
         self.tasks = load_tasks()
 
-        # ----- Header -----
+        
         header = tk.Label(
             self.root,
             text="To-Do List",
@@ -37,7 +37,7 @@ class ToDoApp:
         )
         header.pack(fill="x")
 
-        # ----- Entry Section -----
+       
         entry_frame = tk.Frame(self.root, bg="#f8f9fa", bd=2, relief="ridge")
         entry_frame.pack(pady=20, padx=20, fill="x")
 
@@ -60,7 +60,7 @@ class ToDoApp:
         )
         add_btn.grid(row=0, column=1, padx=5, pady=5)
 
-        # ----- Task List -----
+        # Task List
         list_frame = tk.Frame(self.root, bg="#f8f9fa", bd=2, relief="ridge")
         list_frame.pack(pady=10, padx=20, fill="both", expand=True)
 
@@ -84,7 +84,7 @@ class ToDoApp:
         self.listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.scrollbar.config(command=self.listbox.yview)
 
-        # ----- Buttons -----
+        # Buttons 
         btn_frame = tk.Frame(self.root, bg="#e9ecef")
         btn_frame.pack(pady=15)
 

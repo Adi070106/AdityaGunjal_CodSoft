@@ -13,7 +13,7 @@ user_score = 0
 computer_score = 0
 tie_score = 0
 
-# ---------- Logic ----------
+# Logic
 def determine_winner(user_choice, computer_choice):
     if user_choice == computer_choice:
         return "It's a tie!"
@@ -30,13 +30,12 @@ def play(user_choice):
     computer_choice = random.choice(CHOICES)
     result = determine_winner(user_choice, computer_choice)
 
-    # Display result
+    # Result
     result_label.config(
         text=f"🧍 You: {EMOJIS[user_choice]} {user_choice}\n💻 Computer: {EMOJIS[computer_choice]} {computer_choice}\n\n➡️ {result}",
         fg="#333"
     )
 
-    # Update scores
     if result == "You win!":
         user_score += 1
     elif result == "Computer wins!":
@@ -71,9 +70,8 @@ def update_score_label():
         text=f"🏆 You: {user_score}    💻 Computer: {computer_score}    🤝 Tie: {tie_score}"
     )
 
-# ---------- UI ----------
+# UI 
 
-# Gradient effect (simple trick)
 gradient = tk.Canvas(root, width=500, height=550, highlightthickness=0)
 gradient.place(x=0, y=0)
 for i in range(550):
@@ -89,7 +87,6 @@ title_label = tk.Label(
 )
 title_label.place(relx=0.5, y=40, anchor="center")
 
-# Frame for results
 result_label = tk.Label(
     root,
     text="Make your move!",
@@ -100,7 +97,7 @@ result_label = tk.Label(
 )
 result_label.place(relx=0.5, rely=0.4, anchor="center")
 
-# Button styles
+# Button
 def hover_in(event):
     event.widget.config(bg="#0077b6")
 
@@ -119,7 +116,6 @@ btn_style = {
     "cursor": "hand2"
 }
 
-# Choice buttons
 button_frame = tk.Frame(root, bg="#f0f4f8")
 button_frame.place(relx=0.5, rely=0.6, anchor="center")
 
@@ -131,12 +127,10 @@ rock_btn.grid(row=0, column=0, padx=10)
 paper_btn.grid(row=0, column=1, padx=10)
 scissors_btn.grid(row=0, column=2, padx=10)
 
-# Add hover animations
 for btn in (rock_btn, paper_btn, scissors_btn):
     btn.bind("<Enter>", hover_in)
     btn.bind("<Leave>", hover_out)
 
-# Score label
 score_label = tk.Label(
     root,
     text="🏆 You: 0    💻 Computer: 0    🤝 Tie: 0",
@@ -146,7 +140,6 @@ score_label = tk.Label(
 )
 score_label.place(relx=0.5, rely=0.75, anchor="center")
 
-# Buttons below
 play_again_btn = tk.Button(
     root,
     text="🔁 Play Again",
