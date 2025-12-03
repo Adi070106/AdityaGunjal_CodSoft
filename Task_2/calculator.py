@@ -1,121 +1,65 @@
 import tkinter as tk
-from tkinter import messagebox
 
-# ---------------------- Helpers ----------------------
+# ---------------- Logic ---------------- #
 
-def trim_number(num):
-    """Remove trailing zeros from float output"""
-    s = ('{:.10f}'.format(num)).rstrip('0').rstrip('.')
-    return s if s != '' else '0'
-
-
-def safe_eval(expr):
-    """Safe evaluation for simple calculator expressions"""
-    allowed = "0123456789+-*/.()"
-    if any(ch not in allowed for ch in expr):
-        raise ValueError("Invalid characters")
-    return eval(expr)
-
-# ---------------------- Event Logic ----------------------
-
-def click(event):
+def click(btn_text):
     global expression
-    text = event.widget.cget("text")
 
-    # Convert UI 'x' → '*' internally
-    if text == "x":
-        text = "*"
+    # Convert UI 'x' into internal '*'
+    if btn_text == "x":
+        btn_text = "*"
 
-    if text == "=":
+    if btn_text == "C":
+        expression = ""
+        input_var.set("")
+        return
+
+    if btn_text == "=":
         try:
-            result = safe_eval(expression)
-            result = round(result, 10)
-            result = trim_number(result)
-            entry_var.set(result)
+            result = str(eval(expression))
+            input_var.set(result)
             expression = result
         except ZeroDivisionError:
-            messagebox.showerror("Error", "Cannot divide by zero!")
+            input_var.set("Cannot divide by zero")
             expression = ""
-            entry_var.set("")
         except Exception:
-            messagebox.showerror("Error", "Invalid input!")
+            input_var.set("Error")
             expression = ""
-            entry_var.set("")
         return
 
-    if text == "C":
-        expression = ""
-        entry_var.set("")
-        return
-
-    if text == "%":
+    if btn_text == "%":
         try:
-            if not expression:
-                return
-
-            # Find last operator
-            last_op = None
-            for i in range(len(expression)-1, -1, -1):
-                if expression[i] in "+-*/":
-                    if i == 0:   # leading -
-                        continue
-                    last_op = i
-                    break
-
-            if last_op is None:
-                # single number
-                val = float(expression)
-                val /= 100
-                expression = trim_number(val)
-                entry_var.set(expression)
-                return
-
-            # expression looks like A op B
-            A = safe_eval(expression[:last_op])
-            B = float(expression[last_op+1:])
-
-            percent_val = (A * B) / 100
-
-            expression = expression[:last_op+1] + trim_number(percent_val)
-            entry_var.set(expression)
-
+            result = str(eval(expression) / 100)
+            input_var.set(result)
+            expression = result
         except:
-            messagebox.showerror("Error", "Invalid percentage operation!")
+            input_var.set("Error")
             expression = ""
-            entry_var.set("")
         return
 
-    # Prevent consecutive operators (except leading -)
-    if text in "+-*/":
-        if expression == "":
-            if text != "-":
-                return
-        if expression and expression[-1] in "+-*/":
-            expression = expression[:-1]
+    expression += btn_text
+    input_var.set(expression)
 
-    expression += text
-    entry_var.set(expression)
-
-# ---------------------- UI ----------------------
+# ---------------- UI ---------------- #
 
 root = tk.Tk()
-root.title("iOS Style Calculator")
-root.geometry("340x520")
+root.title("Colorful Calculator")
+root.geometry("330x440")
 root.resizable(False, False)
-root.configure(bg="#000000")
+root.configure(bg="#1c1c1c")
 
 expression = ""
-entry_var = tk.StringVar()
+input_var = tk.StringVar()
 
 # Display
 entry = tk.Entry(
     root,
-    textvariable=entry_var,
-    font=("SF Pro Display", 38),
+    textvariable=input_var,
+    font=("Arial", 28),
     justify="right",
-    bg="#000000",
-    fg="#ffffff",
     bd=0,
+    bg="#1c1c1c",
+    fg="white",
     relief=tk.FLAT
 )
 entry.pack(fill="x", padx=15, pady=20, ipady=20)
@@ -126,58 +70,48 @@ buttons = [
     ["7", "8", "9", "-"],
     ["4", "5", "6", "+"],
     ["1", "2", "3", "="],
-    ["0", ".", ""]
+    ["0", ".", "(", ")"]
 ]
 
-btn_frame = tk.Frame(root, bg="#000000")
-btn_frame.pack(fill="both", expand=True, padx=10, pady=10)
+btn_frame = tk.Frame(root, bg="#1c1c1c")
+btn_frame.pack(expand=True, fill="both")
 
-# iOS colors
-OPERATOR_BG = "#ff9f0a"
-LIGHT_BTN = "#d4d4d2"
-DARK_BTN = "#505050"
+# Colors
+NUMBER_BG = "#2e2e2e"
+OP_BG = "#5a5a5a"
+
+NUMBER_FG = "white"
+OP_FG = "white"
 
 for r, row in enumerate(buttons):
     for c, text in enumerate(row):
-        if text == "":
-            continue
 
-        # Decide color theme
-        if text in ["+", "-", "x", "/", "="]:
-            bg = OPERATOR_BG
-            fg = "#ffffff"
-        elif text == "C":
-            bg = LIGHT_BTN
-            fg = "#000000"
+        # Number buttons
+        if text.isdigit():
+            bg = NUMBER_BG
+            fg = NUMBER_FG
+
+        # Operator buttons
         else:
-            bg = DARK_BTN
-            fg = "#ffffff"
+            bg = OP_BG
+            fg = OP_FG
 
         btn = tk.Button(
             btn_frame,
             text=text,
-            font=("SF Pro Display", 26),
+            font=("Arial", 18),
+            bd=0,
             bg=bg,
             fg=fg,
-            bd=0,
-            relief=tk.FLAT,
-            activebackground="#737373",
-            activeforeground="#ffffff"
+            activebackground="#777",
+            command=lambda t=text: click(t)
         )
-        btn.grid(row=r, column=c, sticky="nsew", padx=6, pady=6)
-        btn.bind("<Button-1>", click)
+        btn.grid(row=r, column=c, sticky="nsew", padx=5, pady=5)
 
-# Grid responsiveness
+# Grid resize rules
 for i in range(5):
     btn_frame.rowconfigure(i, weight=1)
 for i in range(4):
     btn_frame.columnconfigure(i, weight=1)
-
-# Make '0' span 2 columns
-zero_btn = None
-for widget in btn_frame.grid_slaves(row=4, column=0):
-    zero_btn = widget
-if zero_btn:
-    zero_btn.grid_configure(columnspan=2)
 
 root.mainloop()
