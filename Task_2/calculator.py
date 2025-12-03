@@ -40,7 +40,7 @@ def click(btn_text):
 
 
 root = tk.Tk()
-root.title("Colorful Calculator")
+root.title("Calculator")
 root.geometry("330x440")
 root.resizable(False, False)
 root.configure(bg="#1c1c1c")
