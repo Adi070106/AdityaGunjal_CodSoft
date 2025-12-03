@@ -19,7 +19,7 @@ def load_contacts():
             else:
                 return []
     except json.JSONDecodeError:
-        messagebox.showerror("Error", "contacts.json is corrupted. Fix or delete the file.")
+        messagebox.showerror("Error")
         return []
 
 
